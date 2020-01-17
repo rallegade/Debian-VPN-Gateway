@@ -1,4 +1,4 @@
-# Raspberry Pi VPN Gateway
+# Debian VPN Gateway
 Given the recent problems with mandating privacy for Internet users, it's important, now more than ever, that people consider their own methods for ensuring their privacy online. A Raspberry Pi can provide an excellent method for helping secure a home or office network against the collection of personal information. While this script is designed for a Raspberry Pi and the Private Internet Access service, it should be modifiable to work with any OpenVPN compatible service and on any Debian Jessie based system.
 
 ## About
