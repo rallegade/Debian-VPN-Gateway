@@ -46,7 +46,7 @@ Press any key to continue
 read -n 1 -s
 
 #Setup PIA
-read -p 'PIA username: ' uservar
+read -p 'PIA username: ' piauservar
 read -p 'PIA password: ' passvar
 
 STRONG=0
@@ -107,7 +107,7 @@ echo -e "script-security 2\nup /etc/openvpn/update-resolv-conf\ndown /etc/openvp
 
 #Add credentials
 rm /etc/openvpn/login
-echo -e "${uservar}\n${passvar}" | tee -a /etc/openvpn/login
+echo -e "${piauservar}\n${passvar}" | tee -a /etc/openvpn/login
 chmod 600 /etc/openvpn/login
 
 clear
