@@ -6,15 +6,18 @@ if [ $(id -u) != "0" ]; then
 	exit 1
 fi
 
-#Setup       
+#Setup
 clear
 echo "
-~~~~~~~~~~~~~~~~~~~~~
-Welcome to the PiVPN installer for PIA!
-First make sure you've already run the raspi-config program,
-if you haven't, push ctr+c and do so now. See the Read Me for details.
-~~~~~~~~~~~~~~~~~~~~~
-Press any key to continue"
+~~~~~~~~~~~~~~~~~~~~
+Welcome to the Debian VPN installer for PIA!
+This script is a fork of ShVerni orignal VPN installer for Raspberry pi
+modified for working with debian now.
+~~~~~~~~~~~~~~~~~~~
+"
+read -p 'Please type the username of your non root user: ' uservar
+echo "
+press any key to continue"
 read -n 1 -s
 
 clear 
@@ -62,11 +65,11 @@ select yn in "Yes" "No"; do
 		break;;
     esac
 done
-unzip -o openvpn.zip -d /home/pi/PIAopenvpn
+unzip -o openvpn.zip -d /home/$uservar/PIAopenvpn
 
 #Setup VPN configuration file
-chown -R pi:pi /home/pi/PIAopenvpn
-files=$(find /home/pi/PIAopenvpn/ -maxdepth 1 -type f -regex ".*ovpn")
+chown -R $uservar:$uservar /home/$uservar/PIAopenvpn
+files=$(find /home/$uservar/PIAopenvpn/ -maxdepth 1 -type f -regex ".*ovpn")
 readarray -t options <<<"$files"
 clear
 echo "Please select an endpoint to connect to:"
@@ -79,14 +82,14 @@ select vpnregion in "${options[@]}" ; do
     fi
 done
 
-cp swap_endpoint.sh /home/pi/
-chown pi:pi /home/pi/swap_endpoint.sh
-chmod 755 /home/pi/swap_endpoint.sh
+cp swap_endpoint.sh /home/$uservar/
+chown $uservar:$uservar /home/$uservar/swap_endpoint.sh
+chmod 755 /home/$uservar/swap_endpoint.sh
 
 if [ "$STRONG" -eq 0 ]; then
-	cp /home/pi/PIAopenvpn/ca.rsa.2048.crt /home/pi/PIAopenvpn/crl.rsa.2048.pem /etc/openvpn/
+	cp /home/$uservar/PIAopenvpn/ca.rsa.2048.crt /home/$uservar/PIAopenvpn/crl.rsa.2048.pem /etc/openvpn/
 else
-	cp /home/pi/PIAopenvpn/ca.rsa.4096.crt /home/pi/PIAopenvpn/crl.rsa.4096.pem /etc/openvpn/
+	cp /home/$uservar/PIAopenvpn/ca.rsa.4096.crt /home/$uservar/PIAopenvpn/crl.rsa.4096.pem /etc/openvpn/
 fi
 cp "$vpnregion" /etc/openvpn/PIAvpn.conf
 
@@ -127,9 +130,9 @@ cd ..
 #Enable Openvpn
 systemctl enable openvpn@PIAvpn
 
-cp update_openVPN.sh /home/pi/
-chown pi:pi /home/pi/update_openVPN.sh
-chmod 755 /home/pi/update_openVPN.sh
+cp update_openVPN.sh /home/$uservar/
+chown $uservar:$uservar /home/$uservar/update_openVPN.sh
+chmod 755 /home/$uservar/update_openVPN.sh
 
 clear
 echo "
@@ -150,9 +153,9 @@ make install
 cd ..
 
 #Copy monit scripts
-cp vpnfix.sh /home/pi/
-chmod 755 /home/pi/vpnfix.sh
-chown -R pi:pi /home/pi/vpnfix.sh
+cp vpnfix.sh /home/$uservar/
+chmod 755 /home/$uservar/vpnfix.sh
+chown -R $uservar:$uservar /home/$uservar/vpnfix.sh
 cp monitrc /etc/
 chmod 600 /etc/monitrc
 cp monit.service /lib/systemd/system/
@@ -166,12 +169,12 @@ echo "
 ~~~~~~~~~~~~~~~~~~~~~
 Now we need to set up your networking.
 You'll need to know the IP address of your current gateway (router)
-and you'll need to know the IP address you'd like for the Raspberry Pi.
+and you'll need to know the IP address you'd like for your debian server.
 ~~~~~~~~~~~~~~~~~~~~~
 "
 
 read -p 'Internet Gateway IP address: ' gatewayadr
-read -p 'Raspberry Pi IP address: ' piadr
+read -p 'Debian server IP address: ' piadr
 #Static routes	
 
 #Restore or backup original configuration
@@ -276,9 +279,9 @@ select yn in "Yes" "No"; do
 		cp vpnbypass /etc/init.d/
 		chmod 755 /etc/init.d/vpnbypass
 		update-rc.d vpnbypass defaults
-		cp add_exception.sh /home/pi/
-		chmod 755 /home/pi/add_exception.sh
-		chown pi:pi /home/pi/add_exception.sh;
+		cp add_exception.sh /home/$uservar/
+		chmod 755 /home/$uservar/add_exception.sh
+		chown $uservar:$uservar /home/$uservar/add_exception.sh;
 		break;;
         No) break;;
     esac
@@ -298,7 +301,7 @@ select yn in "Yes" "No"; do
 		workingdir=$(pwd)
 		cd ..
 		rm -R "$workingdir";
-		rm /home/pi/master.zip
+		rm /home/$uservar/master.zip
 		break;;
         No) break;;
     esac
